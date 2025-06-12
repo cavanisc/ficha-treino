@@ -6,6 +6,7 @@ export interface Exercise {
   weight?: number;
   completed: boolean;
   notes: string;
+  restTime?: number; // Rest time in seconds
 }
 
 export interface WorkoutSheet {
@@ -37,9 +38,31 @@ export interface WorkoutHistory {
   sheet: 'A' | 'B' | 'C';
 }
 
+export interface WorkoutSession {
+  id: string;
+  date: string;
+  day: string;
+  sheet: 'A' | 'B' | 'C';
+  sheetName: string;
+  startTime: string;
+  endTime?: string;
+  duration?: number; // in minutes
+  completedExercises: number;
+  totalExercises: number;
+  notes: string;
+  exercises: Exercise[];
+}
+
 export interface AppState {
   currentWeek: WeekWorkout;
   workoutSheets: WorkoutSheets;
   history: WorkoutHistory[];
+  sessions: WorkoutSession[];
   weekStartDate: string;
+  activeSession?: {
+    id: string;
+    startTime: string;
+    day: string;
+    sheet: 'A' | 'B' | 'C';
+  };
 }

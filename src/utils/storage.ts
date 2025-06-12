@@ -1,4 +1,4 @@
-import { AppState, WorkoutSheets, WeekWorkout, WorkoutHistory } from '../types/workout';
+import { AppState, WorkoutSheets, WeekWorkout, WorkoutHistory, WorkoutSession } from '../types/workout';
 import { defaultWorkoutSheets, defaultWeekWorkout } from '../data/defaultWorkout';
 
 const STORAGE_KEY = 'workout_tracker_abc_data';
@@ -14,7 +14,15 @@ export const saveToStorage = (data: AppState): void => {
 export const loadFromStorage = (): AppState | null => {
   try {
     const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : null;
+    if (data) {
+      const parsed = JSON.parse(data);
+      // Ensure sessions array exists for backward compatibility
+      if (!parsed.sessions) {
+        parsed.sessions = [];
+      }
+      return parsed;
+    }
+    return null;
   } catch (error) {
     console.error('Erro ao carregar dados:', error);
     return null;
@@ -46,6 +54,7 @@ export const importWorkoutData = (jsonString: string): boolean => {
         workoutSheets: importedData.workoutSheets,
         currentWeek: currentData?.currentWeek || defaultWeekWorkout,
         history: currentData?.history || [],
+        sessions: currentData?.sessions || [],
         weekStartDate: currentData?.weekStartDate || getWeekStartDate()
       };
       
@@ -57,4 +66,8 @@ export const importWorkoutData = (jsonString: string): boolean => {
     console.error('Erro ao importar dados:', error);
     return false;
   }
+};
+
+export const generateSessionId = (): string => {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2);
 };
